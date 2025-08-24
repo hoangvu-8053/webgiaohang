@@ -1,0 +1,360 @@
+@model webgiaohang.Models.Order
+
+@{
+    ViewData["Title"] = "Tạo đơn hàng mới";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-shipping-fast me-2"></i>
+                        Tạo đơn hàng giao hàng
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post" id="orderForm" enctype="multipart/form-data">
+                        <!-- Thông tin người gửi -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-primary border-bottom pb-2">
+                                    <i class="fas fa-user me-2"></i>Thông tin người gửi
+                                </h5>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="SenderName" class="form-label fw-bold">
+                                        <i class="fas fa-user me-1"></i>Tên người gửi
+                                    </label>
+                                    @if (User.IsInRole("Sender"))
+                                    {
+                                        <input type="hidden" asp-for="SenderName" value="@User.Identity.Name" />
+                                        <input class="form-control" value="@User.Identity.Name" readonly />
+                                    }
+                                    else
+                                    {
+                                        <input asp-for="SenderName" class="form-control" placeholder="Nhập tên người gửi" />
+                                    }
+                                    <span asp-validation-for="SenderName" class="text-danger"></span>
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label asp-for="SenderEmail" class="form-label fw-bold">
+                                        <i class="fas fa-envelope me-1"></i>Email người gửi
+                                    </label>
+                                    <input asp-for="SenderEmail" type="email" class="form-control" placeholder="sender@email.com" />
+                                    <span asp-validation-for="SenderEmail" class="text-danger"></span>
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label asp-for="SenderPhone" class="form-label fw-bold">
+                                        <i class="fas fa-phone me-1"></i>Số điện thoại người gửi
+                                    </label>
+                                    <input asp-for="SenderPhone" class="form-control" placeholder="0123456789" />
+                                    <span asp-validation-for="SenderPhone" class="text-danger"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="PickupAddress" class="form-label fw-bold">
+                                        <i class="fas fa-map-marker-alt me-1"></i>Địa chỉ lấy hàng
+                                    </label>
+                                    <textarea asp-for="PickupAddress" class="form-control" rows="3" 
+                                              placeholder="Nhập địa chỉ chi tiết để lấy hàng"></textarea>
+                                    <span asp-validation-for="PickupAddress" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Thông tin người nhận -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-success border-bottom pb-2">
+                                    <i class="fas fa-user-check me-2"></i>Thông tin người nhận
+                                </h5>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="ReceiverName" class="form-label fw-bold">
+                                        <i class="fas fa-user me-1"></i>Tên người nhận
+                                    </label>
+                                    @if (User.IsInRole("Receiver"))
+                                    {
+                                        <input asp-for="ReceiverName" class="form-control" placeholder="Nhập tên người nhận" readonly />
+                                    }
+                                    else
+                                    {
+                                        <input asp-for="ReceiverName" class="form-control" placeholder="Nhập tên người nhận" />
+                                    }
+                                    <span asp-validation-for="ReceiverName" class="text-danger"></span>
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label asp-for="ReceiverEmail" class="form-label fw-bold">
+                                        <i class="fas fa-envelope me-1"></i>Email người nhận
+                                    </label>
+                                    <input asp-for="ReceiverEmail" type="email" class="form-control" placeholder="receiver@email.com" />
+                                    <span asp-validation-for="ReceiverEmail" class="text-danger"></span>
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label asp-for="ReceiverPhone" class="form-label fw-bold">
+                                        <i class="fas fa-phone me-1"></i>Số điện thoại người nhận
+                                    </label>
+                                    <input asp-for="ReceiverPhone" class="form-control" placeholder="0987654321" />
+                                    <span asp-validation-for="ReceiverPhone" class="text-danger"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="DeliveryAddress" class="form-label fw-bold">
+                                        <i class="fas fa-map-marker-alt me-1"></i>Địa chỉ giao hàng
+                                    </label>
+                                    <textarea asp-for="DeliveryAddress" class="form-control" rows="3" 
+                                              placeholder="Nhập địa chỉ chi tiết để giao hàng"></textarea>
+                                    <span asp-validation-for="DeliveryAddress" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Thông tin hàng hóa -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-info border-bottom pb-2">
+                                    <i class="fas fa-box me-2"></i>Thông tin hàng hóa
+                                </h5>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Product" class="form-label fw-bold">
+                                        <i class="fas fa-box me-1"></i>Tên hàng hóa
+                                    </label>
+                                    <input asp-for="Product" class="form-control" placeholder="Mô tả hàng hóa cần giao" />
+                                    <span asp-validation-for="Product" class="text-danger"></span>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-bold">
+                                        <i class="fas fa-image me-1"></i>Hình ảnh sản phẩm (tùy chọn)
+                                    </label>
+                                    <input type="file" name="ProductImage" class="form-control" accept="image/*" onchange="previewImage(event)" />
+                                    <div class="mt-2">
+                                        <img id="imgPreview" src="#" alt="Preview" style="max-width:180px;max-height:120px;display:none;border-radius:8px;box-shadow:0 2px 8px #ccc;" />
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label asp-for="ProductDescription" class="form-label fw-bold">
+                                        <i class="fas fa-info-circle me-1"></i>Mô tả chi tiết
+                                    </label>
+                                    <textarea asp-for="ProductDescription" class="form-control" rows="2" 
+                                              placeholder="Mô tả chi tiết về hàng hóa (không bắt buộc)"></textarea>
+                                    <span asp-validation-for="ProductDescription" class="text-danger"></span>
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <label asp-for="Price" class="form-label fw-bold">
+                                        <i class="fas fa-money-bill me-1"></i>Giá trị hàng hóa (VNĐ)
+                                    </label>
+                                    <input asp-for="Price" type="number" class="form-control" placeholder="0" min="0" step="1000" />
+                                    <span asp-validation-for="Price" class="text-danger"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="Weight" class="form-label fw-bold">
+                                                <i class="fas fa-weight-hanging me-1"></i>Trọng lượng (kg)
+                                            </label>
+                                            <input asp-for="Weight" type="number" class="form-control" placeholder="0" min="0" step="0.1" />
+                                            <span asp-validation-for="Weight" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="DeliveryType" class="form-label fw-bold">
+                                                <i class="fas fa-clock me-1"></i>Loại giao hàng
+                                            </label>
+                                            <select asp-for="DeliveryType" class="form-select">
+                                                <option value="Standard">Giao hàng tiêu chuẩn</option>
+                                                <option value="Express">Giao hàng nhanh</option>
+                                                <option value="SameDay">Giao hàng trong ngày</option>
+                                            </select>
+                                            <span asp-validation-for="DeliveryType" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="Length" class="form-label fw-bold">Dài (cm)</label>
+                                            <input asp-for="Length" type="number" class="form-control" placeholder="0" min="0" step="0.1" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="Width" class="form-label fw-bold">Rộng (cm)</label>
+                                            <input asp-for="Width" type="number" class="form-control" placeholder="0" min="0" step="0.1" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group mb-3">
+                                            <label asp-for="Height" class="form-label fw-bold">Cao (cm)</label>
+                                            <input asp-for="Height" type="number" class="form-control" placeholder="0" min="0" step="0.1" />
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group mb-3">
+                                    <div class="form-check">
+                                        <input asp-for="IsInsured" class="form-check-input" type="checkbox" id="isInsured" />
+                                        <label class="form-check-label fw-bold" for="isInsured">
+                                            <i class="fas fa-shield-alt me-1"></i>Bảo hiểm hàng hóa
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group mb-3" id="insuranceValueGroup" style="display: none;">
+                                    <label asp-for="InsuranceValue" class="form-label fw-bold">
+                                        <i class="fas fa-shield-alt me-1"></i>Giá trị bảo hiểm (VNĐ)
+                                    </label>
+                                    <input asp-for="InsuranceValue" type="number" class="form-control" placeholder="0" min="0" step="1000" />
+                                    <span asp-validation-for="InsuranceValue" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Thông tin phí vận chuyển -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="text-warning border-bottom pb-2">
+                                    <i class="fas fa-calculator me-2"></i>Thông tin phí vận chuyển
+                                </h5>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="ShippingFee" class="form-label fw-bold">
+                                        <i class="fas fa-truck me-1"></i>Phí vận chuyển (VNĐ)
+                                    </label>
+                                    <input asp-for="ShippingFee" type="number" class="form-control" placeholder="50000" min="0" step="1000" value="50000" />
+                                    <span asp-validation-for="ShippingFee" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Phí vận chuyển:</strong><br>
+                                    • Tiêu chuẩn: 50.000₫<br>
+                                    • Nhanh: 80.000₫<br>
+                                    • Trong ngày: 120.000₫
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ghi chú -->
+                        <div class="form-group mb-4">
+                            <label asp-for="Notes" class="form-label fw-bold">
+                                <i class="fas fa-sticky-note me-1"></i>Ghi chú
+                            </label>
+                            <textarea asp-for="Notes" class="form-control" rows="3" 
+                                      placeholder="Ghi chú thêm về đơn hàng (không bắt buộc)"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
+                        </div>
+
+                        <!-- Tổng tiền -->
+                        <div id="totalDisplay" class="alert alert-success mb-4" style="display: none;">
+                            <i class="fas fa-calculator me-2"></i>
+                            <strong>Tổng tiền: <span id="totalAmount">0</span> VNĐ</strong>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Lưu ý:</strong> Đơn hàng sẽ được xử lý trong thời gian sớm nhất. 
+                            Bạn có thể theo dõi trạng thái đơn hàng trong mục "Đơn hàng của tôi".
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="/Orders" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>Quay lại
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-check me-1"></i>Tạo đơn hàng
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-calculate total amount
+        document.getElementById('Price').addEventListener('input', calculateTotal);
+        document.getElementById('ShippingFee').addEventListener('input', calculateTotal);
+        document.getElementById('InsuranceValue').addEventListener('input', calculateTotal);
+        
+        // Show/hide insurance value field
+        document.getElementById('isInsured').addEventListener('change', function() {
+            const insuranceGroup = document.getElementById('insuranceValueGroup');
+            if (this.checked) {
+                insuranceGroup.style.display = 'block';
+            } else {
+                insuranceGroup.style.display = 'none';
+                document.getElementById('InsuranceValue').value = '';
+            }
+            calculateTotal();
+        });
+        
+        // Update shipping fee based on delivery type
+        document.getElementById('DeliveryType').addEventListener('change', function() {
+            const shippingFee = document.getElementById('ShippingFee');
+            switch(this.value) {
+                case 'Standard':
+                    shippingFee.value = '50000';
+                    break;
+                case 'Express':
+                    shippingFee.value = '80000';
+                    break;
+                case 'SameDay':
+                    shippingFee.value = '120000';
+                    break;
+            }
+            calculateTotal();
+        });
+        
+        function calculateTotal() {
+            const price = parseFloat(document.getElementById('Price').value) || 0;
+            const shippingFee = parseFloat(document.getElementById('ShippingFee').value) || 0;
+            const insuranceValue = parseFloat(document.getElementById('InsuranceValue').value) || 0;
+            const total = price + shippingFee + insuranceValue;
+            
+            // Hiển thị tổng tiền
+            if (total > 0) {
+                document.getElementById('totalDisplay').style.display = 'block';
+                document.getElementById('totalAmount').textContent = total.toLocaleString('vi-VN');
+            } else {
+                document.getElementById('totalDisplay').style.display = 'none';
+            }
+        }
+
+        function previewImage(event) {
+            const [file] = event.target.files;
+            const img = document.getElementById('imgPreview');
+            if (file) {
+                img.src = URL.createObjectURL(file);
+                img.style.display = 'block';
+            } else {
+                img.src = '#';
+                img.style.display = 'none';
+            }
+        }
+    </script>
+} 

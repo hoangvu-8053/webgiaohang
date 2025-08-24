@@ -1,0 +1,279 @@
+@{
+    ViewData["Title"] = "Báo cáo shipper";
+}
+
+<div class="container-fluid mt-4">
+    <h2 class="mb-4">🚚 Báo cáo hiệu suất shipper</h2>
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i>
+        <strong>Lưu ý:</strong> Doanh thu giao hàng chỉ tính từ những đơn hàng có trạng thái "Đã giao thành công" (Delivered). Phí dịch vụ tính cho tất cả đơn hàng đã vận chuyển (Shipping + Delivered).
+    </div>
+
+    <!-- Thống kê tổng quan -->
+    @if (ViewBag.ShipperStats != null)
+    {
+        var shipperStats = ViewBag.ShipperStats as List<dynamic>;
+        var totalShippers = shipperStats?.Count ?? 0;
+        var totalOrders = shipperStats?.Sum(s => (int)s.TotalOrders) ?? 0;
+        var totalDelivered = shipperStats?.Sum(s => (int)s.DeliveredOrders) ?? 0;
+        var avgDeliveryTime = shipperStats?.Where(s => s.AverageDeliveryTime != null).Average(s => (double)s.AverageDeliveryTime) ?? 0;
+
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h4>@totalShippers</h4>
+                        <p class="mb-0">🚚 Tổng shipper</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h4>@totalOrders</h4>
+                        <p class="mb-0">📦 Tổng đơn hàng</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <h4>@totalDelivered</h4>
+                        <p class="mb-0">✅ Đã giao thành công</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-warning text-white">
+                    <div class="card-body">
+                        <h4>@avgDeliveryTime.ToString("F1") ngày</h4>
+                        <p class="mb-0">⏱️ Thời gian giao trung bình</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bảng thống kê shipper -->
+        <div class="card">
+            <div class="card-header">
+                <h5>📊 Chi tiết hiệu suất từng shipper</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>🚚 Shipper</th>
+                                <th>📦 Tổng đơn hàng</th>
+                                <th>🚚 Đã vận chuyển</th>
+                                <th>✅ Đã giao</th>
+                                <th>📊 Tỷ lệ thành công</th>
+                                <th>💰 Doanh thu giao hàng</th>
+                                <th>💼 Phí dịch vụ</th>
+                                <th>💵 Tổng doanh thu</th>
+                                <th>⏱️ Thời gian giao TB</th>
+                                <th>🏆 Xếp hạng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (shipperStats != null)
+                            {
+                                var sortedShippers = shipperStats.OrderByDescending(s => s.TotalOrders).ToList();
+                                for (int i = 0; i < sortedShippers.Count; i++)
+                                {
+                                    var shipper = sortedShippers[i];
+                                    var shipperTotalOrders = (int)shipper.TotalOrders;
+                                    var shippedOrders = (int)shipper.ShippedOrders;
+                                    var deliveredOrders = (int)shipper.DeliveredOrders;
+                                    var successRate = shipperTotalOrders > 0 ? (double)deliveredOrders / shipperTotalOrders * 100 : 0;
+                                    var totalRevenue = (decimal)shipper.TotalRevenue;
+                                    var totalServiceFee = (decimal)shipper.TotalServiceFee;
+                                    var totalRevenueWithFee = (decimal)shipper.TotalRevenueWithFee;
+                                    var shipperAvgDeliveryTime = shipper.AverageDeliveryTime != null ? (double)shipper.AverageDeliveryTime : 0;
+
+                                    <tr>
+                                        <td>
+                                            <strong>@shipper.ShipperName</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary">@shipperTotalOrders đơn</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">@shippedOrders đơn</span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-success">@deliveredOrders đơn</span>
+                                        </td>
+                                        <td>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar @(successRate >= 80 ? "bg-success" : successRate >= 60 ? "bg-warning" : "bg-danger")" 
+                                                     style="width: @successRate%">
+                                                    @successRate.ToString("F1")%
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <strong class="text-success">@totalRevenue.ToString("N0") ₫</strong>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-warning">@totalServiceFee.ToString("N0") ₫</span>
+                                        </td>
+                                        <td>
+                                            <strong class="text-info">@totalRevenueWithFee.ToString("N0") ₫</strong>
+                                        </td>
+                                        <td>
+                                            @if (shipperAvgDeliveryTime > 0)
+                                            {
+                                                <span class="badge @(shipperAvgDeliveryTime <= 1 ? "bg-success" : shipperAvgDeliveryTime <= 2 ? "bg-warning" : "bg-danger")">
+                                                    @shipperAvgDeliveryTime.ToString("F1") ngày
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">N/A</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (i == 0)
+                                            {
+                                                <span class="badge bg-warning">🥇 #1</span>
+                                            }
+                                            else if (i == 1)
+                                            {
+                                                <span class="badge bg-secondary">🥈 #2</span>
+                                            }
+                                            else if (i == 2)
+                                            {
+                                                <span class="badge bg-danger">🥉 #3</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-dark">#@(i + 1)</span>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Biểu đồ hiệu suất -->
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>📊 Biểu đồ số đơn hàng theo shipper</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="ordersChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>📊 Biểu đồ tỷ lệ thành công</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="successChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center">
+            <h4>📭 Không có dữ liệu</h4>
+            <p>Chưa có dữ liệu thống kê về shipper.</p>
+        </div>
+    }
+
+    <!-- Nút điều hướng -->
+    <div class="text-center mt-4">
+        <a href="/Report" class="btn btn-primary me-2">
+            📊 Quay lại Dashboard
+        </a>
+        <a href="/Report/Orders" class="btn btn-info me-2">
+            📋 Báo cáo đơn hàng
+        </a>
+        <a href="/Report/Revenue" class="btn btn-success">
+            💰 Báo cáo doanh thu
+        </a>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        @if (ViewBag.ShipperStats != null)
+        {
+            <text>
+            const shipperData = @Html.Raw(Json.Serialize(ViewBag.ShipperStats));
+            
+            // Biểu đồ số đơn hàng
+            const ordersCtx = document.getElementById('ordersChart').getContext('2d');
+            new Chart(ordersCtx, {
+                type: 'bar',
+                data: {
+                    labels: shipperData.map(s => s.shipperName),
+                    datasets: [{
+                        label: 'Tổng đơn hàng',
+                        data: shipperData.map(s => s.totalOrders),
+                        backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Biểu đồ tỷ lệ thành công
+            const successCtx = document.getElementById('successChart').getContext('2d');
+            new Chart(successCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: shipperData.map(s => s.shipperName),
+                    datasets: [{
+                        data: shipperData.map(s => {
+                            const total = s.totalOrders;
+                            const delivered = s.deliveredOrders;
+                            return total > 0 ? (delivered / total * 100) : 0;
+                        }),
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.8)',
+                            'rgba(54, 162, 235, 0.8)',
+                            'rgba(255, 205, 86, 0.8)',
+                            'rgba(75, 192, 192, 0.8)',
+                            'rgba(153, 102, 255, 0.8)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.label + ': ' + context.parsed.toFixed(1) + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            </text>
+        }
+    </script>
+} 

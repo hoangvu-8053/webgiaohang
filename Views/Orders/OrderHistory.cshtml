@@ -1,0 +1,149 @@
+@model IEnumerable<webgiaohang.Models.Order>
+@{
+    ViewData["Title"] = "Lịch sử đơn hàng";
+    var status = ViewBag.Status as string;
+    var fromDate = ViewBag.FromDate as DateTime?;
+    var toDate = ViewBag.ToDate as DateTime?;
+    var userRole = ViewBag.UserRole as string;
+}
+<div class="container mt-4">
+    <h2 class="mb-4"><i class="fas fa-history me-2"></i>Lịch sử đơn hàng</h2>
+    <!-- Bộ lọc -->
+    <form method="get" class="row g-3 mb-4">
+        <div class="col-md-3">
+            <label class="form-label">Trạng thái</label>
+            <select name="status" class="form-select">
+                @if (string.IsNullOrEmpty(status)) {
+                    <option value="" selected>Tất cả</option>
+                } else {
+                    <option value="">Tất cả</option>
+                }
+                @if (status == "Pending") {
+                    <option value="Pending" selected>Chờ xử lý</option>
+                } else {
+                    <option value="Pending">Chờ xử lý</option>
+                }
+                @if (status == "Shipping") {
+                    <option value="Shipping" selected>Đang giao</option>
+                } else {
+                    <option value="Shipping">Đang giao</option>
+                }
+                @if (status == "Delivered") {
+                    <option value="Delivered" selected>Đã giao</option>
+                } else {
+                    <option value="Delivered">Đã giao</option>
+                }
+                @if (status == "Giao không thành công") {
+                    <option value="Giao không thành công" selected>Giao không thành công</option>
+                } else {
+                    <option value="Giao không thành công">Giao không thành công</option>
+                }
+                @if (status == "Cancelled") {
+                    <option value="Cancelled" selected>Đã hủy</option>
+                } else {
+                    <option value="Cancelled">Đã hủy</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Từ ngày</label>
+            <input type="date" name="fromDate" class="form-control" value="@(fromDate?.ToString("yyyy-MM-dd") ?? "")" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Đến ngày</label>
+            <input type="date" name="toDate" class="form-control" value="@(toDate?.ToString("yyyy-MM-dd") ?? "")" />
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary me-2"><i class="fas fa-filter me-1"></i>Lọc</button>
+            <a href="/Orders/OrderHistory" class="btn btn-secondary">Reset</a>
+        </div>
+    </form>
+    <!-- Danh sách đơn hàng -->
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            <h4><i class="fas fa-box-open"></i> Không có đơn hàng nào phù hợp</h4>
+            <p>Không tìm thấy đơn hàng với bộ lọc đã chọn.</p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Mã đơn</th>
+                        <th>Sản phẩm</th>
+                        <th>Tổng tiền</th>
+                        <th>Ngày đặt</th>
+                        <th>Trạng thái</th>
+                        @if (userRole == "Sender")
+                        {
+                            <th>Người nhận</th>
+                            <th>Địa chỉ giao</th>
+                        }
+                        else
+                        {
+                            <th>Người gửi</th>
+                            <th>Địa chỉ lấy</th>
+                        }
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @foreach (var order in Model)
+                {
+                    <tr>
+                        <td><strong>@order.TrackingNumber</strong></td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                @if (!string.IsNullOrEmpty(order.ProductImagePath))
+                                {
+                                    <img src="@order.ProductImagePath" alt="Ảnh sản phẩm" style="width:40px;height:40px;object-fit:cover;border-radius:8px;box-shadow:0 1.5px 6px #bbb;" />
+                                }
+                                <span>@order.Product</span>
+                            </div>
+                        </td>
+                        <td>@order.TotalAmount.ToString("N0") VNĐ</td>
+                        <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>
+                            @switch (order.Status)
+                            {
+                                case "Pending":
+                                    <span class="badge bg-secondary">Chờ xử lý</span>
+                                    break;
+                                case "Shipping":
+                                    <span class="badge bg-primary">Đang giao</span>
+                                    break;
+                                case "Delivered":
+                                    <span class="badge bg-success">Đã giao</span>
+                                    break;
+                                case "Cancelled":
+                                    <span class="badge bg-danger">Đã hủy</span>
+                                    break;
+                                default:
+                                    <span class="badge bg-dark">@order.Status</span>
+                                    break;
+                            }
+                        </td>
+                        @if (userRole == "Sender")
+                        {
+                            <td>@order.ReceiverName</td>
+                            <td>@order.DeliveryAddress</td>
+                        }
+                        else
+                        {
+                            <td>@order.SenderName</td>
+                            <td>@order.PickupAddress</td>
+                        }
+                        <td>
+                            <a href="/Orders/Details/@order.Id" class="btn btn-info btn-sm"><i class="fas fa-eye"></i> Chi tiết</a>
+                            <a href="/Orders/TrackResult/@order.Id" class="btn btn-secondary btn-sm"><i class="fas fa-map-marker-alt"></i> Theo dõi</a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div> 

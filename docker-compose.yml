@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  webgiaohang:
+    build: .
+    ports:
+      - "8080:80"
+      - "8443:443"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80;https://+:443
+    volumes:
+      - ./wwwroot:/app/wwwroot
+      - ./webgiaohang.db:/app/webgiaohang.db
+    restart: unless-stopped 

@@ -1,0 +1,96 @@
+@model webgiaohang.Models.Product
+@{
+    ViewData["Title"] = "Thêm sản phẩm mới";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h3 class="mb-0">➕ Thêm sản phẩm mới</h3>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Name" class="form-label">📦 Tên sản phẩm *</label>
+                                    <input asp-for="Name" class="form-control" placeholder="Nhập tên sản phẩm..." />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Category" class="form-label">🏷️ Danh mục</label>
+                                    <select asp-for="Category" class="form-select">
+                                        <option value="">-- Chọn danh mục --</option>
+                                        <option value="Electronics">Electronics</option>
+                                        <option value="Books">Books</option>
+                                        <option value="Clothing">Clothing</option>
+                                        <option value="Food">Food</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <span asp-validation-for="Category" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Description" class="form-label">📝 Mô tả</label>
+                            <textarea asp-for="Description" class="form-control" rows="3" 
+                                      placeholder="Nhập mô tả sản phẩm..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Price" class="form-label">💰 Giá (VNĐ) *</label>
+                                    <input asp-for="Price" class="form-control" type="number" min="0" 
+                                           placeholder="Nhập giá sản phẩm..." />
+                                    <span asp-validation-for="Price" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="StockQuantity" class="form-label">📦 Số lượng tồn kho *</label>
+                                    <input asp-for="StockQuantity" class="form-control" type="number" min="0" 
+                                           placeholder="Nhập số lượng..." />
+                                    <span asp-validation-for="StockQuantity" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="ImageUrl" class="form-label">🖼️ URL hình ảnh</label>
+                            <input asp-for="ImageUrl" class="form-control" 
+                                   placeholder="Nhập URL hình ảnh sản phẩm..." />
+                            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-check mb-3">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" checked />
+                            <label asp-for="IsActive" class="form-check-label">
+                                ✅ Kích hoạt sản phẩm
+                            </label>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-success btn-lg me-2">
+                                💾 Lưu sản phẩm
+                            </button>
+                            <a href="/Product" class="btn btn-secondary btn-lg">
+                                ↩️ Quay lại
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

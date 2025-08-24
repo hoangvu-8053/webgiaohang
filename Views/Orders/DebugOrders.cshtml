@@ -1,0 +1,93 @@
+@{
+    ViewData["Title"] = "Debug Orders";
+    var allOrders = ViewBag.AllOrders as List<webgiaohang.Models.Order>;
+    var userOrders = ViewBag.UserOrders as List<webgiaohang.Models.Order>;
+    var failedOrders = ViewBag.FailedOrders as List<webgiaohang.Models.Order>;
+    var currentUser = ViewBag.CurrentUser as string;
+}
+
+<div class="container mt-4">
+    <h2>Debug Orders</h2>
+    <p><strong>Current User:</strong> @currentUser</p>
+    
+    <h3>All Orders (@allOrders?.Count)</h3>
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Sender</th>
+                <th>Receiver</th>
+                <th>Status</th>
+                <th>CreatedBy</th>
+                <th>CreatedByRole</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in allOrders ?? new List<webgiaohang.Models.Order>())
+            {
+                <tr>
+                    <td>@order.Id</td>
+                    <td>@order.SenderName</td>
+                    <td>@order.ReceiverName</td>
+                    <td>@order.Status</td>
+                    <td>@order.CreatedBy</td>
+                    <td>@order.CreatedByRole</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    
+    <h3>User Orders (@userOrders?.Count)</h3>
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Sender</th>
+                <th>Receiver</th>
+                <th>Status</th>
+                <th>CreatedBy</th>
+                <th>CreatedByRole</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in userOrders ?? new List<webgiaohang.Models.Order>())
+            {
+                <tr>
+                    <td>@order.Id</td>
+                    <td>@order.SenderName</td>
+                    <td>@order.ReceiverName</td>
+                    <td>@order.Status</td>
+                    <td>@order.CreatedBy</td>
+                    <td>@order.CreatedByRole</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    
+    <h3>Failed Orders (@failedOrders?.Count)</h3>
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Sender</th>
+                <th>Receiver</th>
+                <th>Status</th>
+                <th>CreatedBy</th>
+                <th>CreatedByRole</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in failedOrders ?? new List<webgiaohang.Models.Order>())
+            {
+                <tr>
+                    <td>@order.Id</td>
+                    <td>@order.SenderName</td>
+                    <td>@order.ReceiverName</td>
+                    <td>@order.Status</td>
+                    <td>@order.CreatedBy</td>
+                    <td>@order.CreatedByRole</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div> 

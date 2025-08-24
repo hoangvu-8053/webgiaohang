@@ -1,0 +1,27 @@
+@model webgiaohang.Models.Order
+
+@{
+    ViewData["Title"] = "Xóa đơn hàng";
+}
+
+<h2>Xóa đơn hàng</h2>
+
+<h3>Bạn có chắc chắn muốn xóa đơn hàng này?</h3>
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">Người gửi:</dt>
+        <dd class="col-sm-10">@Model.SenderName</dd>
+        <dt class="col-sm-2">Người nhận:</dt>
+        <dd class="col-sm-10">@Model.ReceiverName</dd>
+        <dt class="col-sm-2">Hàng hóa:</dt>
+        <dd class="col-sm-10">@Model.Product</dd>
+        <dt class="col-sm-2">Tổng tiền:</dt>
+        <dd class="col-sm-10">@Model.TotalAmount.ToString("N0") ₫</dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Xóa" class="btn btn-danger" /> |
+        <a asp-action="Index">Quay lại danh sách</a>
+    </form>
+</div> 

@@ -1,0 +1,44 @@
+@model webgiaohang.Models.User
+@{
+    ViewData["Title"] = "Tạo tài khoản mới";
+}
+<h2 class="mb-4"><i class="fas fa-user-plus me-2 text-success"></i>@ViewData["Title"]</h2>
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-info">@TempData["Message"]</div>
+}
+<form asp-action="CreateUser" asp-controller="Admin" method="post" class="row g-3" autocomplete="off">
+    <div class="col-md-6">
+        <label class="form-label">Tên đăng nhập *</label>
+        <input asp-for="Username" class="form-control" required />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Họ và tên *</label>
+        <input asp-for="FullName" class="form-control" required />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Email *</label>
+        <input asp-for="Email" class="form-control" required />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Số điện thoại *</label>
+        <input asp-for="Phone" class="form-control" required />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Mật khẩu *</label>
+        <input type="password" name="password" class="form-control" required />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label">Vai trò *</label>
+        <select asp-for="Role" class="form-select" required>
+            <option value="">Chọn vai trò</option>
+            <option value="Shipper">Shipper</option>
+            <option value="Staff">Nhân viên (Staff)</option>
+        </select>
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-success"><i class="fas fa-plus me-1"></i> Tạo tài khoản</button>
+        <a href="/Admin/Users" class="btn btn-secondary ms-2">Quay lại</a>
+    </div>
+</form>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/> 

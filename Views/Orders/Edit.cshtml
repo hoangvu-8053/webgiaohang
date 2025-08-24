@@ -1,0 +1,91 @@
+@model webgiaohang.Models.Order
+
+@{
+    ViewData["Title"] = "Sửa đơn hàng";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    
+    <!-- Thông tin người gửi -->
+    <div class="form-group">
+        <label for="SenderName">Tên người gửi</label>
+        <input asp-for="SenderName" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="SenderEmail">Email người gửi</label>
+        <input asp-for="SenderEmail" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="SenderPhone">Số điện thoại người gửi</label>
+        <input asp-for="SenderPhone" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="PickupAddress">Địa chỉ lấy hàng</label>
+        <input asp-for="PickupAddress" class="form-control" />
+    </div>
+    
+    <!-- Thông tin người nhận -->
+    <div class="form-group">
+        <label for="ReceiverName">Tên người nhận</label>
+        <input asp-for="ReceiverName" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="ReceiverEmail">Email người nhận</label>
+        <input asp-for="ReceiverEmail" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="ReceiverPhone">Số điện thoại người nhận</label>
+        <input asp-for="ReceiverPhone" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="DeliveryAddress">Địa chỉ giao hàng</label>
+        <input asp-for="DeliveryAddress" class="form-control" />
+    </div>
+    
+    <!-- Thông tin sản phẩm -->
+    <div class="form-group">
+        <label for="Product">Sản phẩm</label>
+        <input asp-for="Product" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="ProductDescription">Mô tả sản phẩm</label>
+        <textarea asp-for="ProductDescription" class="form-control"></textarea>
+    </div>
+    <div class="form-group">
+        <label for="Price">Giá sản phẩm</label>
+        <input asp-for="Price" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="ShippingFee">Phí vận chuyển</label>
+        <input asp-for="ShippingFee" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="TotalAmount">Tổng tiền</label>
+        <input asp-for="TotalAmount" class="form-control" />
+    </div>
+    
+    <!-- Thông tin giao hàng -->
+    <div class="form-group">
+        <label for="Status">Trạng thái</label>
+        <select asp-for="Status" class="form-control">
+            <option value="Pending">Pending</option>
+            <option value="Shipping">Shipping</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Failed">Failed</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="ShipperName">Tên shipper</label>
+        <input asp-for="ShipperName" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="TrackingNumber">Mã theo dõi</label>
+        <input asp-for="TrackingNumber" class="form-control" />
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+</form>
+<a href="/Orders">Quay lại danh sách</a> 

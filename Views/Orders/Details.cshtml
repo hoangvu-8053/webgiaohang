@@ -1,0 +1,495 @@
+@model webgiaohang.Models.Order
+
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng";
+    var isSender = User.IsInRole("Sender");
+    var isReceiver = User.IsInRole("Receiver");
+}
+
+<div class="container mt-4 animate__animated animate__fadeIn">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="mb-0">
+                        <i class="fas fa-file-alt me-2"></i>
+                        Chi tiết đơn hàng <span class="text-primary">#@Model.Id</span>
+                    </h2>
+                    @if (!string.IsNullOrEmpty(Model.TrackingNumber))
+                    {
+                        <p class="text-muted mb-0">Mã theo dõi: <strong>@Model.TrackingNumber</strong></p>
+                    }
+                </div>
+                <div>
+                    <a href="/Orders" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Quay lại
+                    </a>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Staff"))
+                    {
+                        <a href="/Orders/Edit/@Model.Id" class="btn btn-primary">
+                            <i class="fas fa-edit me-1"></i>Sửa
+                        </a>
+                    }
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Thông tin đơn hàng -->
+                <div class="col-md-8">
+                    <div class="card shadow mb-4 p-3 border-0 rounded-4 animate__animated animate__fadeInLeft" style="background: linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%);">
+                        <div class="card-header bg-primary text-white rounded-3 mb-3">
+                            <h5 class="mb-0">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Thông tin đơn hàng
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <span class="fw-bold text-muted">Hàng hóa:</span>
+                                        <div class="fs-5 fw-semibold text-dark">@Model.Product</div>
+                                        @if (!string.IsNullOrEmpty(Model.ProductDescription))
+                                        {
+                                            <div class="text-muted small">@Model.ProductDescription</div>
+                                        }
+                                    </div>
+                                    <div class="mb-3">
+                                        <span class="fw-bold text-muted">Giá trị hàng hóa:</span>
+                                        <div class="fs-5 text-primary">@Model.Price.ToString("N0") ₫</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <span class="fw-bold text-muted">Phí vận chuyển:</span>
+                                        <div class="fs-5 text-info">@Model.ShippingFee.ToString("N0") ₫</div>
+                                    </div>
+                                    @if (Model.InsuranceValue.HasValue && Model.InsuranceValue > 0)
+                                    {
+                                        <div class="mb-3">
+                                            <span class="fw-bold text-muted">Phí bảo hiểm:</span>
+                                            <div class="fs-5 text-warning">@Model.InsuranceValue.Value.ToString("N0") ₫</div>
+                                        </div>
+                                    }
+                                    <div class="mb-3">
+                                        <span class="fw-bold text-muted">Tổng tiền:</span>
+                                        <div class="fs-3 fw-bold text-success">@Model.TotalAmount.ToString("N0") ₫</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <span class="fw-bold text-muted">Ngày đặt hàng:</span>
+                                        <div>@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</div>
+                                    </div>
+                                    @if (Model.EstimatedDeliveryDate.HasValue)
+                                    {
+                                        <div class="mb-3">
+                                            <span class="fw-bold text-muted">Dự kiến giao:</span>
+                                            <div>@Model.EstimatedDeliveryDate.Value.ToString("dd/MM/yyyy")</div>
+                                        </div>
+                                    }
+                                    @if (Model.ActualDeliveryDate.HasValue)
+                                    {
+                                        <div class="mb-3">
+                                            <span class="fw-bold text-muted">Ngày giao thực tế:</span>
+                                            <div class="text-success">@Model.ActualDeliveryDate.Value.ToString("dd/MM/yyyy HH:mm")</div>
+                                        </div>
+                                    }
+                                    <div class="mb-3">
+                                        <span class="fw-bold text-muted">Trạng thái:</span>
+                                        <div>
+                                            @if (Model.Status == "Pending") {
+                                                <span class="badge bg-secondary fs-6">
+                                                    <i class="fas fa-clock me-1"></i>Chờ xử lý
+                                                </span>
+                                            } else if (Model.Status == "Shipping") {
+                                                <span class="badge bg-primary fs-6">
+                                                    <i class="fas fa-truck me-1"></i>Đang giao
+                                                </span>
+                                            } else if (Model.Status == "Delivered") {
+                                                <span class="badge bg-success fs-6">
+                                                    <i class="fas fa-check-circle me-1"></i>Đã giao
+                                                </span>
+                                            } else if (Model.Status == "Failed") {
+                                                <span class="badge bg-danger fs-6">
+                                                    <i class="fas fa-times-circle me-1"></i>Thất bại
+                                                </span>
+                                            } else {
+                                                <span class="badge bg-dark fs-6">@Model.Status</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(Model.DeliveryType))
+                                    {
+                                        <div class="mb-3">
+                                            <span class="fw-bold text-muted">Loại giao hàng:</span>
+                                            <div>@Model.DeliveryType</div>
+                                        </div>
+                                    }
+                                    @if (Model.Weight.HasValue)
+                                    {
+                                        <div class="mb-3">
+                                            <span class="fw-bold text-muted">Trọng lượng:</span>
+                                            <div>@Model.Weight kg</div>
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(Model.ProductImagePath))
+                                    {
+                                        <div class="mb-3">
+                                            <span class="fw-bold text-muted">Hình ảnh hàng hóa:</span>
+                                            <div class="mt-2">
+                                                <img src="@Model.ProductImagePath" alt="Ảnh hàng hóa" style="max-width:220px;max-height:160px;border-radius:12px;box-shadow:0 2px 12px #bbb;" />
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin người gửi -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-user me-2"></i>
+                                Thông tin người gửi
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="fw-bold text-muted">Tên người gửi:</label>
+                                        <p class="mb-0">@Model.SenderName</p>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(Model.SenderEmail))
+                                    {
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Email:</label>
+                                            <p class="mb-0">
+                                                <i class="fas fa-envelope me-1"></i>
+                                                <a href="mailto:@Model.SenderEmail">@Model.SenderEmail</a>
+                                            </p>
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(Model.SenderPhone))
+                                    {
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Số điện thoại:</label>
+                                            <p class="mb-0">
+                                                <i class="fas fa-phone me-1"></i>
+                                                <a href="tel:@Model.SenderPhone">@Model.SenderPhone</a>
+                                            </p>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="fw-bold text-muted">Địa chỉ lấy hàng:</label>
+                                        <p class="mb-0">
+                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                            @Model.PickupAddress
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin người nhận -->
+                    <div class="card shadow mb-4">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-user-check me-2"></i>
+                                Thông tin người nhận
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="fw-bold text-muted">Tên người nhận:</label>
+                                        <p class="mb-0">@Model.ReceiverName</p>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(Model.ReceiverEmail))
+                                    {
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Email:</label>
+                                            <p class="mb-0">
+                                                <i class="fas fa-envelope me-1"></i>
+                                                <a href="mailto:@Model.ReceiverEmail">@Model.ReceiverEmail</a>
+                                            </p>
+                                        </div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(Model.ReceiverPhone))
+                                    {
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Số điện thoại:</label>
+                                            <p class="mb-0">
+                                                <i class="fas fa-phone me-1"></i>
+                                                <a href="tel:@Model.ReceiverPhone">@Model.ReceiverPhone</a>
+                                            </p>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="fw-bold text-muted">Địa chỉ giao hàng:</label>
+                                        <p class="mb-0">
+                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                            @Model.DeliveryAddress
+                                        </p>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(Model.Notes))
+                                    {
+                                        <div class="mb-3">
+                                            <label class="fw-bold text-muted">Ghi chú:</label>
+                                            <p class="mb-0">
+                                                <i class="fas fa-sticky-note me-1"></i>
+                                                @Model.Notes
+                                            </p>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thông tin shipper -->
+                    @if (!string.IsNullOrEmpty(Model.ShipperName))
+                    {
+                        <div class="card shadow mb-4">
+                            <div class="card-header bg-warning text-dark">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-truck me-2"></i>
+                                    Thông tin shipper
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <div class="flex-shrink-0">
+                                        <i class="fas fa-user-tie fa-2x text-warning"></i>
+                                    </div>
+                                    <div class="flex-grow-1 ms-3">
+                                        <h6 class="mb-1">@Model.ShipperName</h6>
+                                        <p class="mb-0 text-muted">Shipper được phân công giao hàng</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Đánh giá đơn hàng -->
+                    @if (Model.Status == "Delivered")
+                    {
+                        <div class="card shadow mb-4">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-star me-2"></i>
+                                    Đánh giá đơn hàng
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                @if (ViewBag.HasReview)
+                                {
+                                    var review = ViewBag.ExistingReview as webgiaohang.Models.Review;
+                                    @if (review != null)
+                                    {
+                                        <div class="alert alert-success">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    <div class="stars-display">
+                                                        @for (int i = 1; i <= 5; i++)
+                                                        {
+                                                            if (i <= review.Rating)
+                                                            {
+                                                                <span class="star-filled">★</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="star-empty">★</span>
+                                                            }
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <h6 class="mb-1">Bạn đã đánh giá đơn hàng này</h6>
+                                                    <p class="mb-1 text-muted">@review.ReviewDate.ToString("dd/MM/yyyy HH:mm")</p>
+                                                    @if (!string.IsNullOrEmpty(review.Comment))
+                                                    {
+                                                        <p class="mb-0"><em>"@review.Comment"</em></p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else if (isSender || isReceiver)
+                                {
+                                    <div class="text-center">
+                                        <i class="fas fa-star fa-3x text-muted mb-3"></i>
+                                        <h6 class="text-muted mb-3">Bạn chưa đánh giá đơn hàng này</h6>
+                                        <a href="/Orders/Review/@Model.Id" class="btn btn-success">
+                                            <i class="fas fa-star me-1"></i>Đánh giá ngay
+                                        </a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="text-center">
+                                        <i class="fas fa-star fa-3x text-muted mb-3"></i>
+                                        <p class="text-muted mb-0">Chưa có đánh giá cho đơn hàng này</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Timeline trạng thái -->
+                <div class="col-md-4">
+                    <div class="card shadow">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-history me-2"></i>
+                                Timeline
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="timeline">
+                                <!-- Đặt hàng -->
+                                <div class="timeline-item">
+                                    <div class="timeline-marker bg-success">
+                                        <i class="fas fa-check text-white"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h6 class="mb-1">Đơn hàng đã được tạo</h6>
+                                        <p class="mb-0 text-muted">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
+                                    </div>
+                                </div>
+
+                                <!-- Đang xử lý -->
+                                @if (Model.Status != "Pending")
+                                {
+                                    <div class="timeline-item">
+                                        <div class="timeline-marker bg-primary">
+                                            <i class="fas fa-cog text-white"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <h6 class="mb-1">Đơn hàng đang được xử lý</h6>
+                                            <p class="mb-0 text-muted">Đã phân công shipper</p>
+                                        </div>
+                                    </div>
+                                }
+
+                                <!-- Đang giao -->
+                                @if (Model.Status == "Shipping" || Model.Status == "Delivered")
+                                {
+                                    <div class="timeline-item">
+                                        <div class="timeline-marker bg-info">
+                                            <i class="fas fa-truck text-white"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <h6 class="mb-1">Đang giao hàng</h6>
+                                            <p class="mb-0 text-muted">Shipper đang vận chuyển</p>
+                                        </div>
+                                    </div>
+                                }
+
+                                <!-- Đã giao -->
+                                @if (Model.Status == "Delivered")
+                                {
+                                    <div class="timeline-item">
+                                        <div class="timeline-marker bg-success">
+                                            <i class="fas fa-check-circle text-white"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <h6 class="mb-1">Giao hàng thành công</h6>
+                                            @if (Model.ActualDeliveryDate.HasValue)
+                                            {
+                                                <p class="mb-0 text-muted">@Model.ActualDeliveryDate.Value.ToString("dd/MM/yyyy HH:mm")</p>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+
+                                <!-- Trạng thái chờ -->
+                                @if (Model.Status == "Pending")
+                                {
+                                    <div class="timeline-item">
+                                        <div class="timeline-marker bg-secondary">
+                                            <i class="fas fa-clock text-white"></i>
+                                        </div>
+                                        <div class="timeline-content">
+                                            <h6 class="mb-1">Chờ xử lý</h6>
+                                            <p class="mb-0 text-muted">Đơn hàng đang chờ phân công</p>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e9ecef;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -22px;
+    top: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.timeline-content {
+    padding-left: 20px;
+}
+
+.timeline-content h6 {
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.timeline-content p {
+    font-size: 0.8rem;
+}
+
+.stars-display {
+    font-size: 1.5rem;
+}
+
+.star-filled {
+    color: #ffc107;
+}
+
+.star-empty {
+    color: #ddd;
+}
+</style> 

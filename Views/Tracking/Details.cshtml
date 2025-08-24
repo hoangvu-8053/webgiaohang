@@ -1,0 +1,185 @@
+@model webgiaohang.Models.Order
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h3 class="mb-0">📦 Chi tiết đơn hàng #@(Model.TrackingNumber ?? $"DH{Model.Id:D6}")</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>📤 Thông tin người gửi</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Tên người gửi:</strong></td>
+                                    <td>@Model.SenderName</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Số điện thoại:</strong></td>
+                                    <td>@Model.SenderPhone</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Email:</strong></td>
+                                    <td>@(Model.SenderEmail ?? "N/A")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Địa chỉ lấy hàng:</strong></td>
+                                    <td>@Model.PickupAddress</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>📥 Thông tin người nhận</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Tên người nhận:</strong></td>
+                                    <td>@Model.ReceiverName</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Số điện thoại:</strong></td>
+                                    <td>@Model.ReceiverPhone</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Email:</strong></td>
+                                    <td>@(Model.ReceiverEmail ?? "N/A")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Địa chỉ giao hàng:</strong></td>
+                                    <td>@Model.DeliveryAddress</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>📦 Thông tin hàng hóa</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Hàng hóa:</strong></td>
+                                    <td>@Model.Product</td>
+                                </tr>
+                                @if (!string.IsNullOrEmpty(Model.ProductDescription))
+                                {
+                                    <tr>
+                                        <td><strong>Mô tả:</strong></td>
+                                        <td>@Model.ProductDescription</td>
+                                    </tr>
+                                }
+                                <tr>
+                                    <td><strong>Giá trị hàng hóa:</strong></td>
+                                    <td>@Model.Price.ToString("N0") ₫</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Phí vận chuyển:</strong></td>
+                                    <td>@Model.ShippingFee.ToString("N0") ₫</td>
+                                </tr>
+                                @if (Model.InsuranceValue.HasValue && Model.InsuranceValue > 0)
+                                {
+                                    <tr>
+                                        <td><strong>Phí bảo hiểm:</strong></td>
+                                        <td>@Model.InsuranceValue.Value.ToString("N0") ₫</td>
+                                    </tr>
+                                }
+                                <tr>
+                                    <td><strong>Tổng tiền:</strong></td>
+                                    <td><strong class="text-danger">@Model.TotalAmount.ToString("N0") ₫</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>📅 Thông tin thời gian</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Ngày đặt hàng:</strong></td>
+                                    <td>@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ngày giao dự kiến:</strong></td>
+                                    <td>@(Model.EstimatedDeliveryDate?.ToString("dd/MM/yyyy") ?? "Chưa xác định")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ngày giao thực tế:</strong></td>
+                                    <td>@(Model.ActualDeliveryDate?.ToString("dd/MM/yyyy HH:mm") ?? "Chưa giao")</td>
+                                </tr>
+                                @if (!string.IsNullOrEmpty(Model.DeliveryType))
+                                {
+                                    <tr>
+                                        <td><strong>Loại giao hàng:</strong></td>
+                                        <td>@Model.DeliveryType</td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>🚚 Thông tin vận chuyển</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Trạng thái:</strong></td>
+                                    <td>
+                                        @if (Model.Status == "Pending") {
+                                            <span class="badge bg-secondary">⏳ Chờ xử lý</span>
+                                        } else if (Model.Status == "Shipping") {
+                                            <span class="badge bg-primary">🚚 Đang giao</span>
+                                        } else if (Model.Status == "Delivered") {
+                                            <span class="badge bg-success">✅ Đã giao</span>
+                                        } else if (Model.Status == "Failed") {
+                                            <span class="badge bg-danger">❌ Thất bại</span>
+                                        } else {
+                                            <span class="badge bg-dark">@Model.Status</span>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Shipper:</strong></td>
+                                    <td>@(Model.ShipperName ?? "Chưa phân công")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Vị trí hiện tại:</strong></td>
+                                    <td>@(Model.CurrentLocation ?? "N/A")</td>
+                                </tr>
+                                @if (Model.Weight.HasValue)
+                                {
+                                    <tr>
+                                        <td><strong>Trọng lượng:</strong></td>
+                                        <td>@Model.Weight kg</td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            @if (!string.IsNullOrEmpty(Model.Notes))
+                            {
+                                <h5>📝 Ghi chú</h5>
+                                <div class="alert alert-info">
+                                    @Model.Notes
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-3">
+                <a href="/Tracking" class="btn btn-primary">
+                    🔍 Tra cứu đơn hàng khác
+                </a>
+                <a href="/Orders" class="btn btn-secondary">
+                    📋 Quay lại danh sách đơn hàng
+                </a>
+            </div>
+        </div>
+    </div>
+</div> 

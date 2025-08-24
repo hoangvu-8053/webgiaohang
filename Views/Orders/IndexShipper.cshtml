@@ -1,0 +1,86 @@
+@model IEnumerable<webgiaohang.Models.Order>
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+}
+<h2>@ViewData["Title"]</h2>
+<div class="alert alert-info">
+    <i class="fas fa-info-circle"></i>
+    <strong>Lưu ý:</strong> Khi bạn cập nhật trạng thái đơn hàng thành "Shipping" (Đang giao) hoặc "Delivered" (Đã giao), đơn hàng sẽ được tính phí dịch vụ. Doanh thu chỉ tính từ đơn hàng có trạng thái "Delivered".
+</div>
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Bạn chưa có đơn hàng nào được giao.</div>
+}
+else
+{
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Người gửi</th>
+            <th>Người nhận</th>
+            <th>Địa chỉ giao</th>
+            <th>Sản phẩm</th>
+            <th>Giá</th>
+            <th>Ngày đặt</th>
+            <th>Trạng thái</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Id</td>
+            <td>@item.SenderName</td>
+            <td>@item.ReceiverName</td>
+            <td>@item.DeliveryAddress</td>
+            <td>@item.Product</td>
+            <td>@item.Price.ToString("N0") ₫</td>
+            <td>@item.OrderDate.ToString("dd/MM/yyyy")</td>
+            <td>
+                @if (item.Status == "Pending") {
+                    <span class="badge bg-secondary">⏳ Pending</span>
+                } else if (item.Status == "Shipping") {
+                    <span class="badge bg-primary">🚚 Shipping</span>
+                } else if (item.Status == "Delivered") {
+                    <span class="badge bg-success">✅ Delivered</span>
+                } else if (item.Status == "Failed") {
+                    <span class="badge bg-danger">❌ Failed</span>
+                } else {
+                    <span class="badge bg-dark">@item.Status</span>
+                }
+            </td>
+            <td>
+                <form asp-action="UpdateStatus" method="post" style="display: inline;">
+                    <input type="hidden" name="orderId" value="@item.Id" />
+                    <select name="status" class="form-select form-select-sm" style="width: auto; display: inline-block;">
+                        @if (item.Status == "Pending") {
+                            <option selected>Pending</option>
+                        } else {
+                            <option>Pending</option>
+                        }
+                        @if (item.Status == "Shipping") {
+                            <option selected>Shipping</option>
+                        } else {
+                            <option>Shipping</option>
+                        }
+                        @if (item.Status == "Delivered") {
+                            <option selected>Delivered</option>
+                        } else {
+                            <option>Delivered</option>
+                        }
+                        @if (item.Status == "Failed") {
+                            <option selected>Failed</option>
+                        } else {
+                            <option>Failed</option>
+                        }
+                    </select>
+                    <button type="submit" class="btn btn-primary btn-sm">Cập nhật</button>
+                </form>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+} 

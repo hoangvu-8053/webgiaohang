@@ -1,0 +1,208 @@
+@model IEnumerable<webgiaohang.Models.Order>
+@{
+    ViewData["Title"] = "Báo cáo đơn hàng";
+}
+
+<div class="container-fluid mt-4">
+    <h2 class="mb-4">📋 Báo cáo đơn hàng</h2>
+
+    <!-- Bộ lọc -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>🔍 Bộ lọc</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row">
+                <div class="col-md-3">
+                    <label class="form-label">📅 Từ ngày</label>
+                    <input type="date" name="startDate" class="form-control" value="@ViewBag.StartDate?.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">📅 Đến ngày</label>
+                    <input type="date" name="endDate" class="form-control" value="@ViewBag.EndDate?.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">📊 Trạng thái</label>
+                    <select name="status" class="form-select">
+                        <option value="">Tất cả</option>
+                        @if (ViewBag.Status == "Pending") {
+                            <option value="Pending" selected>Pending</option>
+                        } else {
+                            <option value="Pending">Pending</option>
+                        }
+                        @if (ViewBag.Status == "Shipping") {
+                            <option value="Shipping" selected>Shipping</option>
+                        } else {
+                            <option value="Shipping">Shipping</option>
+                        }
+                        @if (ViewBag.Status == "Delivered") {
+                            <option value="Delivered" selected>Delivered</option>
+                        } else {
+                            <option value="Delivered">Delivered</option>
+                        }
+                        @if (ViewBag.Status == "Failed") {
+                            <option value="Failed" selected>Failed</option>
+                        } else {
+                            <option value="Failed">Failed</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">
+                        🔍 Lọc
+                    </button>
+                    <a href="/Report/Orders" class="btn btn-secondary">
+                        🔄 Reset
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Thống kê -->
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h4>@ViewBag.TotalOrders</h4>
+                    <p class="mb-0">📦 Tổng đơn hàng</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h4>@ViewBag.TotalRevenue.ToString("N0") ₫</h4>
+                    <p class="mb-0">💰 Doanh thu giao hàng</p>
+                    <small class="text-light">(Đã giao thành công)</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                                                <h4>@ViewBag.TotalServiceFee.ToString("N0") ₫</h4>
+                            <p class="mb-0">💼 Phí dịch vụ</p>
+                            <small class="text-light">(30.000đ/đơn hàng đã vận chuyển)</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h4>@ViewBag.TotalRevenueWithFee.ToString("N0") ₫</h4>
+                    <p class="mb-0">💵 Tổng doanh thu</p>
+                    <small class="text-light">(Giao hàng + Phí dịch vụ)</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h4>@Model.Count(o => o.Status == "Delivered")</h4>
+                    <p class="mb-0">✅ Đã giao</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h4>@Model.Count(o => o.Status == "Shipping")</h4>
+                    <p class="mb-0">🚚 Đang giao</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bảng đơn hàng -->
+    <div class="card">
+        <div class="card-header">
+            <h5>📋 Danh sách đơn hàng</h5>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>📦 Mã đơn hàng</th>
+                                <th>👤 Khách hàng</th>
+                                <th>📦 Sản phẩm</th>
+                                <th>💰 Tổng tiền</th>
+                                <th>💼 Phí dịch vụ</th>
+                                <th>📅 Ngày đặt</th>
+                                <th>📊 Trạng thái</th>
+                                <th>🚚 Shipper</th>
+                                <th>🔍 Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@(order.TrackingNumber ?? $"DH{order.Id:D6}")</strong>
+                                    </td>
+                                    <td>@order.ReceiverName</td>
+                                    <td>@order.Product</td>
+                                    <td><strong>@order.TotalAmount.ToString("N0") ₫</strong></td>
+                                    <td>
+                                        @if (order.Status == "Shipping" || order.Status == "Delivered")
+                                        {
+                                            <span class="badge bg-warning">30.000 ₫</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">0 ₫</span>
+                                        }
+                                    </td>
+                                    <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>
+                                        @if (order.Status == "Pending") {
+                                            <span class="badge bg-secondary">⏳ Pending</span>
+                                        } else if (order.Status == "Shipping") {
+                                            <span class="badge bg-primary">🚚 Shipping</span>
+                                        } else if (order.Status == "Delivered") {
+                                            <span class="badge bg-success">✅ Delivered</span>
+                                        } else if (order.Status == "Failed") {
+                                            <span class="badge bg-danger">❌ Failed</span>
+                                        } else {
+                                            <span class="badge bg-dark">@order.Status</span>
+                                        }
+                                    </td>
+                                    <td>@(order.ShipperName ?? "Chưa phân công")</td>
+                                    <td>
+                                        <a href="/Orders/Details/@order.Id" class="btn btn-info btn-sm">
+                                            👁️ Chi tiết
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info text-center">
+                    <h4>📭 Không có đơn hàng nào</h4>
+                    <p>Không tìm thấy đơn hàng phù hợp với bộ lọc.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Nút điều hướng -->
+    <div class="text-center mt-4">
+        <a href="/Report" class="btn btn-primary me-2">
+            📊 Quay lại Dashboard
+        </a>
+        <a href="/Report/Revenue" class="btn btn-success me-2">
+            💰 Báo cáo doanh thu
+        </a>
+        <a href="/Report/Shipper" class="btn btn-info">
+            🚚 Báo cáo shipper
+        </a>
+    </div>
+</div> 

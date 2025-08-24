@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\webgiaohang.props" />
+</Project>

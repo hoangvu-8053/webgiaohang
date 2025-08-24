@@ -1,0 +1,179 @@
+@model IEnumerable<webgiaohang.Models.Order>
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+}
+
+<div class="container fade-in-up">
+  
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">
+                        <i class="fas fa-box-open me-2"></i>
+                        Đơn hàng của tôi
+                    </h2>
+                    <p class="mb-0 mt-2 opacity-75">Quản lý và theo dõi tất cả đơn hàng của bạn</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="row mb-4">
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stats-card">
+                <div class="stats-number">@Model.Count()</div>
+                <div class="stats-label">Tổng đơn hàng</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stats-card">
+                <div class="stats-number">@Model.Count(o => o.Status == "Pending")</div>
+                <div class="stats-label">Chờ xử lý</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stats-card">
+                <div class="stats-number">@Model.Count(o => o.Status == "Shipping")</div>
+                <div class="stats-label">Đang giao</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+            <div class="stats-card">
+                <div class="stats-number">@Model.Count(o => o.Status == "Delivered")</div>
+                <div class="stats-label">Đã giao</div>
+            </div>
+        </div>
+    </div>
+
+   
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="/Orders/Create" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Tạo đơn hàng mới
+                        </a>
+                        <a href="/Orders/OrderHistory" class="btn btn-info">
+                            <i class="fas fa-history me-2"></i>Lịch sử đơn hàng
+                        </a>
+                        
+                        <a href="/Orders/TrackOrder" class="btn btn-warning">
+                            <i class="fas fa-search me-2"></i>Tra cứu đơn hàng
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+    @if (!Model.Any())
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+                        <h4 class="text-muted">Chưa có đơn hàng nào</h4>
+                        <p class="text-muted mb-4">Bạn chưa có đơn hàng nào. Hãy tạo đơn hàng đầu tiên!</p>
+                        <a href="/Orders/Create" class="btn btn-primary btn-lg">
+                            <i class="fas fa-plus me-2"></i>Tạo đơn hàng đầu tiên
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-12">
+                @foreach (var order in Model.OrderByDescending(o => o.OrderDate))
+                {
+                    <div class="order-card card mb-4 shadow border-0 animate__animated animate__fadeInUp" style="background: linear-gradient(120deg, #e0eafc 0%, #cfdef3 100%); border-radius: 18px;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-barcode fa-lg me-2 text-primary"></i>
+                                    <span class="fw-bold">Mã đơn:</span>
+                                    <span class="ms-2">@order.TrackingNumber</span>
+                                </div>
+                                <div>
+                                    @if (order.Status == "Pending") {
+                                        <span class="badge bg-secondary fs-6"><i class="fas fa-clock me-1"></i>Chờ xử lý</span>
+                                    } else if (order.Status == "Shipping") {
+                                        <span class="badge bg-primary fs-6"><i class="fas fa-truck me-1"></i>Đang giao</span>
+                                    } else if (order.Status == "Delivered") {
+                                        <span class="badge bg-success fs-6"><i class="fas fa-check-circle me-1"></i>Đã giao</span>
+                                    } else if (order.Status == "Failed") {
+                                        <span class="badge bg-danger fs-6"><i class="fas fa-times-circle me-1"></i>Thất bại</span>
+                                    } else {
+                                        <span class="badge bg-dark fs-6">@order.Status</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="row g-3">
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="mb-2 d-flex align-items-center gap-2">
+                                        @if (!string.IsNullOrEmpty(order.ProductImagePath))
+                                        {
+                                            <img src="@order.ProductImagePath" alt="Ảnh sản phẩm" style="width:48px;height:48px;object-fit:cover;border-radius:8px;box-shadow:0 1.5px 6px #bbb;" />
+                                        }
+                                        <span class="fw-bold text-muted">Sản phẩm</span>: <span class="fw-semibold">@order.Product</span>
+                                    </div>
+                                    <div class="mb-2"><span class="fw-bold text-muted">Tổng tiền</span>: <span class="text-success fw-bold">@order.TotalAmount.ToString("N0") VNĐ</span></div>
+                                    <div class="mb-2"><span class="fw-bold text-muted">Ngày đặt</span>: @order.OrderDate.ToString("dd/MM/yyyy HH:mm")</div>
+                                </div>
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="mb-2"><span class="fw-bold text-muted">Người nhận</span>: @order.ReceiverName</div>
+                                    <div class="mb-2"><span class="fw-bold text-muted">Địa chỉ giao</span>: @order.DeliveryAddress</div>
+                                    @if (!string.IsNullOrEmpty(order.ShipperName))
+                                    {
+                                        <div class="mb-2"><span class="fw-bold text-muted">Shipper</span>: @order.ShipperName</div>
+                                    }
+                                </div>
+                                <div class="col-lg-4 d-flex align-items-center justify-content-end">
+                                    <a href="/Orders/Details/@order.Id" class="btn btn-outline-primary me-2"><i class="fas fa-eye me-1"></i>Chi tiết</a>
+                                    @if (order.Status == "Pending")
+                                    {
+                                        <a href="/Orders/Edit/@order.Id" class="btn btn-outline-warning me-2"><i class="fas fa-edit me-1"></i>Sửa</a>
+                                        <a href="/Orders/CancelOrder/@order.Id" class="btn btn-outline-danger me-2" onclick="return confirm('Bạn có chắc muốn hủy đơn hàng này?')"><i class="fas fa-times me-1"></i>Hủy</a>
+                                    }
+                                    @if (order.Status == "Delivered")
+                                    {
+                                        <a href="/Orders/RequestRefund/@order.Id" class="btn btn-outline-info me-2"><i class="fas fa-undo me-1"></i>Hoàn tiền</a>
+                                        <a href="/Orders/Review/@order.Id" class="btn btn-outline-success me-2"><i class="fas fa-star me-1"></i>Đánh giá</a>
+                                    }
+                                    <a href="/Orders/TrackResult/@order.Id" class="btn btn-outline-secondary"><i class="fas fa-map-marker-alt me-1"></i>Theo dõi</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<style>
+.opacity-75 {
+    opacity: 0.75;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+}
+
+.fa-4x {
+    font-size: 4rem;
+}
+</style> 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/> 

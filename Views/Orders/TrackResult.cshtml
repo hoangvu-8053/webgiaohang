@@ -1,0 +1,545 @@
+@model webgiaohang.Models.Order
+@{
+    ViewData["Title"] = "Kết quả tra cứu đơn hàng";
+}
+
+<div class="container fade-in-up">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-gradient-primary text-white d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                    <div>
+                        <h2 class="mb-0">
+                            <i class="fas fa-search me-2"></i>
+                            Kết quả tra cứu đơn hàng
+                        </h2>
+                        <p class="mb-0 mt-2 opacity-75">Thông tin chi tiết về đơn hàng của bạn</p>
+                    </div>
+                    <div class="mt-3 mt-md-0">
+                        <span class="badge badge-lg status-badge status-@Model.Status.ToLower()">
+                            @switch (Model.Status)
+                            {
+                                case "Pending":
+                                    <text><i class="fas fa-clock me-1"></i>Chờ xử lý</text>
+                                    break;
+                                case "Shipping":
+                                    <text><i class="fas fa-truck me-1"></i>Đang giao</text>
+                                    break;
+                                case "Delivered":
+                                    <text><i class="fas fa-check-circle me-1"></i>Đã giao</text>
+                                    break;
+                                case "Cancelled":
+                                    <text><i class="fas fa-times-circle me-1"></i>Đã hủy</text>
+                                    break;
+                                default:
+                                    <text>@Model.Status</text>
+                                    break;
+                            }
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body pb-2">
+                    <div class="row align-items-center">
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <div class="order-highlight">
+                                <div class="order-label">Mã đơn hàng</div>
+                                <div class="order-value text-primary fs-4 fw-bold">@Model.TrackingNumber</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3 mb-md-0">
+                            <div class="order-highlight">
+                                <div class="order-label">Tổng tiền</div>
+                                <div class="order-value text-success fs-4 fw-bold">@Model.TotalAmount.ToString("N0") VNĐ</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="order-highlight">
+                                <div class="order-label">Ngày đặt hàng</div>
+                                <div class="order-value">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Progress Bar -->
+                    <div class="progress mt-4" style="height: 1.5rem;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: @(Model.Status == "Pending" ? "25%" : Model.Status == "Shipping" ? "60%" : Model.Status == "Delivered" ? "100%" : "0%")">
+                            @switch (Model.Status)
+                            {
+                                case "Pending": <text>Chờ xử lý</text>; break;
+                                case "Shipping": <text>Đang giao</text>; break;
+                                case "Delivered": <text>Đã giao</text>; break;
+                                case "Cancelled": <text>Đã hủy</text>; break;
+                                default: <text>@Model.Status</text>; break;
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Summary Card -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            <i class="fas fa-box me-2"></i>
+                            Thông tin đơn hàng
+                        </h4>
+                        <span class="order-status badge-@Model.Status.ToLower()">
+                            @switch (Model.Status)
+                            {
+                                case "Pending":
+                                    <text><i class="fas fa-clock me-1"></i>Chờ xử lý</text>
+                                    break;
+                                case "Shipping":
+                                    <text><i class="fas fa-truck me-1"></i>Đang giao</text>
+                                    break;
+                                case "Delivered":
+                                    <text><i class="fas fa-check-circle me-1"></i>Đã giao</text>
+                                    break;
+                                case "Cancelled":
+                                    <text><i class="fas fa-times-circle me-1"></i>Đã hủy</text>
+                                    break;
+                                default:
+                                    <text>@Model.Status</text>
+                                    break;
+                            }
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="order-detail">
+                                <div class="order-detail-label">Mã đơn hàng</div>
+                                <div class="order-detail-value">@Model.TrackingNumber</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="order-detail">
+                                <div class="order-detail-label">Ngày đặt hàng</div>
+                                <div class="order-detail-value">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="order-detail">
+                                <div class="order-detail-label">Sản phẩm</div>
+                                <div class="order-detail-value">@Model.Product</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="order-detail">
+                                <div class="order-detail-label">Tổng tiền</div>
+                                <div class="order-detail-value">@Model.TotalAmount.ToString("N0") VNĐ</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Information -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user me-2"></i>
+                        Thông tin người gửi
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="order-detail">
+                        <div class="order-detail-label">Tên người gửi</div>
+                        <div class="order-detail-value">@Model.SenderName</div>
+                    </div>
+                    <div class="order-detail">
+                        <div class="order-detail-label">Email</div>
+                        <div class="order-detail-value">@Model.SenderEmail</div>
+                    </div>
+                    <div class="order-detail">
+                        <div class="order-detail-label">Số điện thoại</div>
+                        <div class="order-detail-value">@Model.SenderPhone</div>
+                    </div>
+                    <div class="order-detail">
+                        <div class="order-detail-label">Địa chỉ lấy hàng</div>
+                        <div class="order-detail-value">@Model.PickupAddress</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-check me-2"></i>
+                        Thông tin người nhận
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="order-detail">
+                        <div class="order-detail-label">Tên người nhận</div>
+                        <div class="order-detail-value">@Model.ReceiverName</div>
+                    </div>
+                    <div class="order-detail">
+                        <div class="order-detail-label">Email</div>
+                        <div class="order-detail-value">@Model.ReceiverEmail</div>
+                    </div>
+                    <div class="order-detail">
+                        <div class="order-detail-label">Số điện thoại</div>
+                        <div class="order-detail-value">@Model.ReceiverPhone</div>
+                    </div>
+                    <div class="order-detail">
+                        <div class="order-detail-label">Địa chỉ giao hàng</div>
+                        <div class="order-detail-value">@Model.DeliveryAddress</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shipping Information -->
+    @if (!string.IsNullOrEmpty(Model.ShipperName))
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-truck me-2"></i>
+                            Thông tin giao hàng
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="order-detail">
+                                    <div class="order-detail-label">Shipper</div>
+                                    <div class="order-detail-value">@Model.ShipperName</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="order-detail">
+                                    <div class="order-detail-label">Phí vận chuyển</div>
+                                    <div class="order-detail-value">@Model.ShippingFee.ToString("N0") VNĐ</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="order-detail">
+                                    <div class="order-detail-label">Dự kiến giao</div>
+                                    <div class="order-detail-value">@(Model.EstimatedDeliveryDate?.ToString("dd/MM/yyyy") ?? "Chưa cập nhật")</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Timeline -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>
+                        Lịch trình đơn hàng
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-content">
+                                <div class="timeline-date">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</div>
+                                <div class="timeline-title">Đơn hàng đã được tạo</div>
+                                <div class="timeline-description">
+                                    Đơn hàng @Model.TrackingNumber đã được tạo thành công bởi @Model.SenderName
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (Model.Status != "Cancelled")
+                        {
+                            <div class="timeline-item">
+                                <div class="timeline-content">
+                                    <div class="timeline-date">@Model.OrderDate.AddHours(1).ToString("dd/MM/yyyy HH:mm")</div>
+                                    <div class="timeline-title">Đơn hàng đã được xác nhận</div>
+                                    <div class="timeline-description">
+                                        Đơn hàng đã được xác nhận và đang chờ xử lý
+                                    </div>
+                                </div>
+                            </div>
+
+                            @if (Model.Status == "Shipping" || Model.Status == "Delivered")
+                            {
+                                <div class="timeline-item">
+                                    <div class="timeline-content">
+                                        <div class="timeline-date">@Model.OrderDate.AddHours(2).ToString("dd/MM/yyyy HH:mm")</div>
+                                        <div class="timeline-title">Đơn hàng đang được giao</div>
+                                        <div class="timeline-description">
+                                            @if (!string.IsNullOrEmpty(Model.ShipperName))
+                                            {
+                                                <span>Shipper @Model.ShipperName đang giao hàng</span>
+                                            }
+                                            else
+                                            {
+                                                <span>Đơn hàng đang được giao</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            @if (Model.Status == "Delivered")
+                            {
+                                <div class="timeline-item">
+                                    <div class="timeline-content">
+                                        <div class="timeline-date">@(Model.ActualDeliveryDate?.ToString("dd/MM/yyyy HH:mm") ?? Model.EstimatedDeliveryDate?.ToString("dd/MM/yyyy HH:mm") ?? "Đã giao")</div>
+                                        <div class="timeline-title">Đơn hàng đã được giao thành công</div>
+                                        <div class="timeline-description">
+                                            Đơn hàng đã được giao đến @Model.ReceiverName thành công
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="timeline-item">
+                                <div class="timeline-content">
+                                    <div class="timeline-date">@Model.OrderDate.AddHours(1).ToString("dd/MM/yyyy HH:mm")</div>
+                                    <div class="timeline-title">Đơn hàng đã bị hủy</div>
+                                    <div class="timeline-description">
+                                        Đơn hàng đã được hủy theo yêu cầu
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes -->
+    @if (!string.IsNullOrEmpty(Model.Notes))
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-sticky-note me-2"></i>
+                            Ghi chú
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="mb-0">@Model.Notes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Action Buttons -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="d-flex flex-wrap justify-content-center gap-3">
+                        <a href="/Orders/TrackOrder" class="btn btn-primary">
+                            <i class="fas fa-search me-2"></i>Tra cứu đơn hàng khác
+                        </a>
+                        <a href="/Orders/Create" class="btn btn-success">
+                            <i class="fas fa-plus me-2"></i>Tạo đơn hàng mới
+                        </a>
+                        <a href="/Account/Login" class="btn btn-info">
+                            <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
+                        </a>
+                        <a href="/" class="btn btn-secondary">
+                            <i class="fas fa-home me-2"></i>Về trang chủ
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.opacity-75 {
+    opacity: 0.75;
+}
+
+.gap-3 {
+    gap: 1rem;
+}
+
+.order-detail {
+    margin-bottom: 1rem;
+}
+
+.order-detail-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+}
+
+.order-detail-value {
+    font-weight: 600;
+    color: #333;
+    font-size: 1rem;
+}
+
+.timeline {
+    position: relative;
+    padding: 2rem 0;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--gradient-primary);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+    padding-left: 60px;
+}
+
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    box-shadow: var(--shadow-light);
+}
+
+.timeline-content {
+    background: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+    position: relative;
+}
+
+.timeline-content::before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 20px;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 10px solid white;
+}
+
+.timeline-date {
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.timeline-title {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.timeline-description {
+    color: #666;
+    line-height: 1.5;
+}
+.status-badge {
+    font-size: 1.1rem;
+    padding: 0.5rem 1.2rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+.status-pending { background: #ffe082; color: #795548; }
+.status-shipping { background: #81d4fa; color: #0277bd; }
+.status-delivered { background: #a5d6a7; color: #388e3c; }
+.status-cancelled { background: #ef9a9a; color: #c62828; }
+.bg-gradient-primary {
+    background: linear-gradient(90deg, #4f8cff 0%, #764ba2 100%) !important;
+}
+.order-highlight {
+    background: #f8f9fa;
+    border-radius: 1rem;
+    padding: 1rem 1.5rem;
+    box-shadow: 0 2px 8px rgba(79, 140, 255, 0.07);
+    margin-bottom: 0.5rem;
+}
+.order-label {
+    font-size: 0.9rem;
+    color: #888;
+    font-weight: 500;
+}
+.order-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+.progress {
+    background: #e3f2fd;
+    border-radius: 1rem;
+    box-shadow: 0 1px 4px rgba(33, 150, 243, 0.08);
+}
+.progress-bar {
+    font-size: 1rem;
+    font-weight: 600;
+}
+.card {
+    border-radius: 1.25rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.card-header {
+    border-radius: 1.25rem 1.25rem 0 0;
+}
+.timeline-item::before {
+    background: linear-gradient(135deg, #4f8cff 0%, #764ba2 100%);
+}
+.timeline-content {
+    border-left: 4px solid #4f8cff;
+}
+.timeline-title {
+    color: #4f8cff;
+}
+.btn {
+    font-size: 1.1rem;
+    padding: 0.7rem 1.5rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(79, 140, 255, 0.07);
+    transition: all 0.2s;
+}
+.btn-primary, .btn-success, .btn-info, .btn-secondary {
+    margin-right: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+.btn-primary:hover, .btn-success:hover, .btn-info:hover, .btn-secondary:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px) scale(1.04);
+}
+.fade-in-up {
+    animation: fadeInUp 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+}
+</style> 

@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: webgiaohang
+    env: dotnet
+    buildCommand: dotnet publish -c Release -o ./publish
+    startCommand: dotnet publish/webgiaohang.dll
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: PORT
+        value: 8080 
