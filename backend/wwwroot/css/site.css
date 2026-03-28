@@ -1,0 +1,108 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Theme improvements - distinctive visual style for order app */
+:root{
+  --primary: #0d6efd;
+  --accent: #2196F3;
+  --muted: #6c757d;
+  --glass: rgba(255,255,255,0.7);
+  --card-bg: linear-gradient(135deg,#f8fbff 0%, #eef6ff 100%);
+}
+
+/* Global font smoothing and nicer body background */
+body{
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  background: linear-gradient(180deg,#f2f7ff 0%, #ffffff 60%);
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+/* Cards */
+.card{
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(24,39,75,0.06);
+  overflow: hidden;
+}
+
+.order-card{
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.order-card:hover{
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(24,39,75,0.12);
+}
+
+/* Stats */
+.stats-card{
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 18px;
+  text-align: center;
+  box-shadow: 0 6px 14px rgba(33,150,243,0.06);
+}
+.stats-number{font-size:1.6rem; font-weight:700; color:var(--accent)}
+.stats-label{font-size:0.85rem; color:var(--muted)}
+
+/* Buttons */
+.btn-primary{
+  background: linear-gradient(180deg,var(--primary), #0853d1);
+  border: none;
+  box-shadow: 0 6px 18px rgba(13,110,253,0.12);
+}
+.btn-outline-primary{
+  border-color: rgba(13,110,253,0.15);
+}
+.btn:active, .btn:focus{outline: none}
+
+/* Badges */
+.badge{
+  border-radius: 999px;
+  padding: .45em .65em;
+  font-weight:600;
+}
+
+/* Table improved */
+.table thead th{
+  border-bottom: 2px solid rgba(0,0,0,0.06);
+  color: #222;
+}
+.table tbody tr{transition: background .12s ease}
+.table tbody tr:hover{background: rgba(33,150,243,0.03)}
+
+/* Map container small tweak */
+#map{border-radius:12px; border:1px solid rgba(0,0,0,0.06)}
+
+/* Small utilities */
+.text-muted-compact{color:#7b8794; font-size:0.92rem}
+.rounded-4{border-radius:16px}
+
+/* Responsive tweaks for order card actions */
+@media (max-width:767px){
+  .order-card .card-body .col-md-4.text-end{display:flex; justify-content:flex-end; gap:6px}
+}

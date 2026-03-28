@@ -1,0 +1,35 @@
+# === ASP.NET Core ===
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+*.DotSettings.user
+wwwroot/lib/
+
+# === Node / React / Vite ===
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+
+# === SQLite DB ===
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# === Logs ===
+logs/
+*.log
+
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === Sensitive configs ===
+appsettings.*.json
+!appsettings.json.example

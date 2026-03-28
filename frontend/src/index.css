@@ -1,0 +1,305 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  /* Fresh & Bright GenZ Palette */
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+  --secondary: #ec4899;
+  --accent: #f59e0b;
+  --success: #10b981;
+  --error: #ef4444;
+  
+  /* Light Mode - Fresh Colors */
+  --bg: #f8fbff;
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --text: #1e293b;
+  --text-muted: #64748b;
+  --border: rgba(99, 102, 241, 0.1);
+  --glass-effect: blur(10px) saturate(150%);
+  
+  --radius: 20px;
+  --radius-lg: 32px;
+  --shadow: 0 10px 30px -5px rgba(99, 102, 241, 0.15), 0 5px 15px -3px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 20px 40px -10px rgba(99, 102, 241, 0.25);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: linear-gradient(135deg, #f8fbff 0%, #eef2ff 100%);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Base Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(2deg); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.9) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.animate-float { animation: float 5s ease-in-out infinite; }
+.animate-fade { animation: scaleIn 0.5s cubic-bezier(0.23, 1, 0.32, 1); }
+
+/* Layout */
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2.5rem 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.app-footer {
+  padding: 3rem;
+  text-align: center;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  background: white;
+}
+
+/* Bright Navbar */
+.navbar {
+  height: 85px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: var(--glass-effect);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.05);
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  text-decoration: none;
+}
+
+.brand-icon {
+  font-size: 2.25rem;
+  filter: drop-shadow(0 4px 6px rgba(99, 102, 241, 0.2));
+}
+
+.brand-name {
+  font-size: 1.75rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -1.5px;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-link {
+  font-weight: 700;
+  color: var(--text-muted);
+  transition: all 0.3s;
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--primary);
+  background: #f1f5ff;
+}
+
+.nav-link.active {
+  background: white;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+  color: var(--primary);
+}
+
+/* Fresh Cards */
+.card {
+  background: var(--bg-card);
+  border: 1px solid white;
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  box-shadow: var(--shadow);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2.25rem;
+  border-radius: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s;
+  border: none;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.25);
+}
+
+.btn-primary:hover {
+  transform: scale(1.03) translateY(-2px);
+  box-shadow: 0 12px 25px rgba(99, 102, 241, 0.35);
+}
+
+/* Auth Cards */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 170px);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 480px;
+  background: white;
+  padding: 3.5rem;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 30px 60px -12px rgba(50, 50, 93, 0.15), 0 18px 36px -18px rgba(0, 0, 0, 0.2);
+  border: 4px solid var(--border);
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+/* Forms */
+.form-group { margin-bottom: 2rem; }
+
+.form-label {
+  display: block;
+  font-weight: 800;
+  font-size: 0.8rem;
+  margin-bottom: 0.75rem;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.input {
+  width: 100%;
+  padding: 1.15rem 1.5rem;
+  border-radius: 16px;
+  border: 2px solid #f1f5f9;
+  background: #f8fafc;
+  color: var(--text);
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: white;
+  box-shadow: 0 0 0 5px rgba(99, 102, 241, 0.1);
+}
+
+/* Feedback */
+.alert-error {
+  background: #fff1f2;
+  color: #e11d48;
+  padding: 1rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border: 1px solid #fee2e2;
+  font-weight: 600;
+}
+
+/* Dashboard Grid */
+.grid { display: grid; gap: 2rem; }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+/* Custom Badge */
+.badge {
+  padding: 0.5rem 1.25rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+}
+.badge-admin { background: #eef2ff; color: #4f46e5; }
+.badge-shipper { background: #ecfdf5; color: #059669; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .navbar { padding: 0 1.5rem; }
+}
+
+/* Loading UI */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f1f5f9;
+  border-top: 4px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Leaflet: container cần kích thước rõ — tránh nền xám không có tile */
+.sonic-osm-map-host {
+  width: 100%;
+  min-height: 280px;
+}
+
+.sonic-osm-map-host.leaflet-container {
+  height: 100%;
+  min-height: 280px;
+  z-index: 1;
+}
