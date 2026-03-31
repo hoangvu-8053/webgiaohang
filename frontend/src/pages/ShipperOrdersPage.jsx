@@ -420,14 +420,20 @@ export default function ShipperOrdersPage() {
 
     setIsTracking(true);
 
-    // Check if we have permission
-    navigator.permissions?.query({ name: 'geolocation' }).then(result => {
-      if (result.state === 'denied') {
-        setMessage('Vui lòng bật quyền truy cập vị trí trong trình duyệt');
-        setIsTracking(false);
-        return;
-      }
-    });
+    // Check permission an toàn trên mọi trình duyệt
+    if (navigator.permissions?.query) {
+      navigator.permissions
+        .query({ name: 'geolocation' })
+        .then((result) => {
+          if (result.state === 'denied') {
+            setMessage('Vui lòng bật quyền truy cập vị trí trong trình duyệt');
+            setIsTracking(false);
+          }
+        })
+        .catch(() => {
+          // Ignore: một số trình duyệt không hỗ trợ query geolocation
+        });
+    }
 
     watchId.current = navigator.geolocation.watchPosition(
       async (position) => {
@@ -530,13 +536,27 @@ export default function ShipperOrdersPage() {
 
   const handleConfirmStartShipping = () => {
     setShowLocationModal(false);
+    // Chuyển trạng thái đơn sang Đang giao trước
+    shipperApi
+      .updateStatus(selectedOrderId, { status: 'Shipping' })
+      .then(() => fetchOrders())
+      .catch((err) => {
+        alert('Lỗi cập nhật trạng thái: ' + (err.response?.data?.message || err.message));
+      });
     setIsTracking(true);
-    startTracking();
   };
 
   const handleStartShippingWithoutGPS = () => {
     setShowLocationModal(false);
-    handleUpdateStatus(selectedOrderId, 'Shipping');
+    shipperApi
+      .updateStatus(selectedOrderId, { status: 'Shipping' })
+      .then(() => {
+        setMessage('Đã cập nhật trạng thái: Shipping');
+        fetchOrders();
+      })
+      .catch((err) => {
+        alert('Lỗi cập nhật trạng thái: ' + (err.response?.data?.message || err.message));
+      });
   };
 
   const statusLabel = {

@@ -34,7 +34,7 @@ echo.
 echo    Backend:  http://localhost:5170  (API)
 echo    Frontend: http://localhost:5173  (MO APP O DAY)
 echo    Swagger:  http://localhost:5170/swagger
-echo    Huong dan API: http://localhost:5170/index.html
+echo    Huong dan API: 
 echo.
 echo  Tai khoan test:
 echo    Admin:    admin / admin123

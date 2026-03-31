@@ -4,14 +4,20 @@ import { useAuth } from '../context/AuthContext';
 import { notificationApi } from '../api/endpoints';
 import { useEffect } from 'react';
 
-const roleLabel = { Admin: 'Quản trị viên', Staff: 'Nhân viên', Shipper: 'Shipper', Sender: 'Người gửi', Receiver: 'Người nhận' };
-const roleBadge = { Admin: 'badge-admin', Staff: 'badge-staff', Shipper: 'badge-shipper', Sender: 'badge-sender', Receiver: 'badge-receiver' };
+const roleLabel = {
+  Admin: 'Quản trị viên',
+  Staff: 'Nhân viên',
+  Shipper: 'Shipper',
+  Sender: 'Người gửi',
+  Receiver: 'Người nhận',
+};
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [unread, setUnread] = useState(0);
 
   useEffect(() => {
@@ -24,74 +30,131 @@ export default function Navbar() {
   }, [user]);
 
   const handleLogout = async () => {
+    setUserMenuOpen(false);
     await logout();
     navigate('/login');
   };
 
-  const navLinks = () => {
+  const getNavLinks = () => {
     if (!user) return [];
     const role = user.role;
     const links = [];
     if (['Admin', 'Staff', 'Sender', 'Receiver'].includes(role)) {
-      links.push({ to: '/orders', label: '📦 Đơn hàng' });
+      links.push({ to: '/orders', label: 'Đơn hàng', icon: '📦' });
     }
     if (role === 'Shipper') {
-      links.push({ to: '/shipper/orders', label: '🚚 Giao hàng' });
+      links.push({ to: '/shipper/orders', label: 'Giao hàng', icon: '🚚' });
     }
     if (['Admin', 'Staff'].includes(role)) {
-      links.push({ to: '/admin/users', label: '👥 Quản lý' });
-      links.push({ to: '/reports', label: '📊 Báo cáo' });
+      links.push({ to: '/admin/users', label: 'Quản lý', icon: '👥' });
+      links.push({ to: '/reports', label: 'Báo cáo', icon: '📊' });
     }
-    links.push({ to: '/chat', label: '💬 Nhắn tin' });
-    links.push({ to: '/notifications', label: unread > 0 ? `🔔 ${unread}` : '🔔' });
+    links.push({ to: '/chat', label: 'Nhắn tin', icon: '💬' });
+    links.push({
+      to: '/notifications',
+      label: unread > 0 ? `Thông báo (${unread})` : 'Thông báo',
+      icon: unread > 0 ? '🔔' : '🔕',
+    });
     return links;
   };
 
   return (
-    <nav className="navbar" style={{ position: 'sticky', top: 0 }}>
-      <div className="navbar-brand">
-        <Link to="/" className="brand-logo" style={{ textDecoration: 'none' }}>
-          <span className="brand-icon">💨</span>
-          <span className="brand-name" style={{ fontWeight: 900, fontSize: '2rem' }}>SONIC</span>
-        </Link>
-      </div>
+    <nav className="navbar">
+      {/* Brand */}
+      <Link to="/" className="brand-logo">
+        <span className="brand-icon">⚡</span>
+        <span className="brand-name">SONIC</span>
+      </Link>
 
-      <div className={`navbar-links ${menuOpen ? 'open' : ''}`}>
-        {navLinks().map(l => (
-          <Link key={l.to} to={l.to} className={`nav-link ${location.pathname.startsWith(l.to) ? 'active' : ''}`}
-            onClick={() => setMenuOpen(false)}>
-            {l.label}
+      {/* Nav Links */}
+      <div className="navbar-links">
+        {getNavLinks().map(l => (
+          <Link
+            key={l.to}
+            to={l.to}
+            className={`nav-link ${location.pathname.startsWith(l.to) ? 'active' : ''}`}
+          >
+            <span>{l.icon}</span> {l.label}
           </Link>
         ))}
       </div>
 
-      <div className="navbar-user">
+      {/* User Area */}
+      <div className="navbar-user" style={{ position: 'relative' }}>
         {user ? (
-          <div className="user-menu" style={{ position: 'relative' }}>
-            <button className="user-btn" onClick={() => setMenuOpen(!menuOpen)} style={{ background: 'white', border: '1px solid #eef2ff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '1rem', padding: '0.65rem 1.5rem', borderRadius: '16px', transition: 'all 0.3s', boxShadow: '0 4px 15px rgba(99, 102, 241, 0.1)' }}>
-              <div style={{ position: 'relative' }}>
-                {user.avatar ? 
-                  <img src={`${import.meta.env.VITE_API_URL || 'http://localhost:5170'}${user.avatar}`} alt="" style={{ width: '36px', height: '36px', borderRadius: '12px', objectFit: 'cover', border: '2px solid var(--primary)' }} /> : 
-                  <div style={{ width: '36px', height: '36px', borderRadius: '12px', background: 'linear-gradient(135deg, #6366f1, #a855f7)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>{user.username?.charAt(0).toUpperCase()}</div>}
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                <span style={{ color: 'var(--text)', fontWeight: 800, fontSize: '0.9rem' }}>{user.fullName || user.username}</span>
-                <span className={`badge ${roleBadge[user.role] || 'badge-admin'}`} style={{ fontSize: '0.65rem', marginTop: '2px', padding: '0.1rem 0.6rem' }}>{user.role}</span>
-              </div>
-            </button>
-            {menuOpen && (
-              <div className="card animate-fade" style={{ position: 'absolute', top: '100%', right: 0, marginTop: '1.25rem', width: '240px', padding: '1.25rem', zIndex: 1001, background: 'white', border: '1px solid #e2e8f0', boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}>
-                <Link to="/profile" className="nav-link" style={{ display: 'block', marginBottom: '0.75rem', color: 'var(--text)', textDecoration: 'none', fontWeight: 700 }} onClick={() => setMenuOpen(false)}>👤 Hồ sơ cá nhân</Link>
-                <div style={{ borderTop: '1px solid #f1f5f9', margin: '0.75rem 0', paddingTop: '0.75rem' }}>
-                  <button onClick={handleLogout} className="btn" style={{ width: '100%', background: '#fff1f2', color: '#e11d48', fontWeight: 800, padding: '0.75rem', borderRadius: '12px' }}>ĐĂNG XUẤT 🚪</button>
+          <>
+            <button
+              className="user-btn"
+              onClick={() => setUserMenuOpen(!userMenuOpen)}
+            >
+              {user.avatar ? (
+                <img
+                  src={`${import.meta.env.VITE_API_URL || 'http://localhost:5170'}${user.avatar}`}
+                  alt=""
+                  className="user-avatar"
+                />
+              ) : (
+                <div className="user-avatar-placeholder">
+                  {user.username?.charAt(0).toUpperCase()}
                 </div>
+              )}
+              <div>
+                <div className="user-info-name">{user.fullName || user.username}</div>
+              </div>
+              <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem' }}>▼</span>
+            </button>
+
+            {userMenuOpen && (
+              <div className="user-menu-dropdown animate-fade">
+                <div style={{ padding: '0.5rem 1rem 1rem', borderBottom: '2px solid var(--border)', marginBottom: '0.75rem' }}>
+                  <div style={{ fontWeight: 900, fontSize: '1.1rem', color: 'var(--text-primary)' }}>
+                    {user.fullName || user.username}
+                  </div>
+                  <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
+                    {user.username}
+                  </div>
+                  <div style={{ marginTop: '0.5rem' }}>
+                    <span className={`badge badge-${user.role?.toLowerCase()}`}>
+                      ⚡ {roleLabel[user.role] || user.role}
+                    </span>
+                  </div>
+                </div>
+
+                <Link to="/profile" className="user-menu-item" onClick={() => setUserMenuOpen(false)}>
+                  👤 Hồ sơ cá nhân
+                </Link>
+                <Link to="/tracking" className="user-menu-item" onClick={() => setUserMenuOpen(false)}>
+                  🔍 Tra cứu đơn hàng
+                </Link>
+
+                <hr className="user-menu-divider" />
+
+                <button
+                  onClick={handleLogout}
+                  className="user-menu-item"
+                  style={{
+                    background: '#fff1f2',
+                    color: '#dc2626',
+                    border: 'none',
+                    width: '100%',
+                    cursor: 'pointer',
+                    fontFamily: 'var(--font-family)',
+                    borderRadius: '10px',
+                  }}
+                >
+                  🚪 Đăng xuất
+                </button>
               </div>
             )}
-          </div>
+          </>
         ) : (
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <Link to="/login" className="btn btn-secondary" style={{ textDecoration: 'none', padding: '0.65rem 1.5rem' }}>ĐĂNG NHẬP</Link>
-            <Link to="/register" className="btn btn-primary" style={{ textDecoration: 'none', padding: '0.65rem 1.5rem' }}>ĐĂNG KÝ ⚡</Link>
+          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+            <Link to="/login" className="btn btn-outline" style={{ padding: '0.6rem 1.5rem', fontSize: '1rem' }}>
+              Đăng nhập
+            </Link>
+            <Link to="/register" className="btn btn-primary" style={{ padding: '0.6rem 1.5rem', fontSize: '1rem' }}>
+              ⚡ Đăng ký
+            </Link>
           </div>
         )}
       </div>

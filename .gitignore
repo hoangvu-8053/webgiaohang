@@ -19,8 +19,17 @@ dist/
 # === SQLite DB ===
 *.db
 *.db-journal
+*.db-shm
+*.db-wal
 *.sqlite
 *.sqlite3
+
+# === Vite build output ===
+frontend/.vite/
+
+# === Postman ===
+.postman/
+postman/
 
 # === Logs ===
 logs/
